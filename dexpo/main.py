@@ -53,7 +53,7 @@ def main(
     ] = None,
 ):
     """
-    Generate an SVG report in the current directory (or an optionally provided path) about a PROJECT.
+    Print a basic report (and optionally write to an SVG file with `--report` flag) about a PROJECT.
     """
     project_info = get_project_info(project, platform.value, api_key)
     write_project_info(project_info, report)
