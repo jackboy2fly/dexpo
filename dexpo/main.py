@@ -1,4 +1,5 @@
 from os import getenv
+from datetime import datetime
 from typing import Annotated
 
 import typer
@@ -54,13 +55,28 @@ def main(
     Print basic reports (and optionally write to SVG files with `--report` flag) about a pypi PROJECT's reputation and security.
     """
     project_info = get_project_info(project, api_key)
-    write_project_info(project_info, report)
+    if project_info["versions"][-1]["number"] != project_info["latest_release_number"]:
+        if datetime.strptime(
+            project_info["latest_release_published_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
+        ) >= datetime.strptime(
+            project_info["versions"][-1]["published_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
+        ):
+            project_version = project_info["latest_release_number"]
+            project_release_time = datetime.strptime(
+                project_info["latest_release_published_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
+            )
+        else:
+            project_version = project_info["versions"][-1]["number"]
+            project_release_time = datetime.strptime(
+                project_info["versions"][-1]["published_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
+            )
+    write_project_info(project_info, project_version, project_release_time, report)
     if vuln:
-        vuln_info = get_vuln_info(project, project_info["versions"][-1]["number"])
+        vuln_info = get_vuln_info(project, project_version)
         if vuln_info:
             if vuln_info["info"]["yanked"]:
                 print(
-                    f"[orange3]Latest version {project_info['versions'][-1]['number']} was yanked because {vuln_info['info']['yanked_reason']}.[/orange3]"
+                    f"[orange3]Latest version {project_version} was yanked because '{vuln_info['info']['yanked_reason']}'.[/orange3]"
                 )
                 print(
                     f"[orange3]Reattempting with latest stable version {project_info['latest_stable_release_number']}.[/orange3]"
@@ -71,7 +87,7 @@ def main(
                 if yanked_vuln_info:
                     if yanked_vuln_info["info"]["yanked"]:
                         print(
-                            f"[bold red]The latest stable version {project_info['latest_stable_release_number']} was also yanked because {yanked_vuln_info['info']['yanked_reason']}.[/bold red]"
+                            f"[bold red]The latest stable version {project_info['latest_stable_release_number']} was also yanked because '{yanked_vuln_info['info']['yanked_reason']}'.[/bold red]"
                         )
                         print(
                             f"[bold red]Please investigate the latest releases of the {project} package for clarity.[/bold red]"
@@ -90,7 +106,7 @@ def main(
             return
         else:
             print(
-                f"[orange3]No vulnerability info was found for the latest version {project_info['versions'][-1]['number']}.[/orange3]"
+                f"[orange3]No vulnerability info was found for the latest version {project_version}.[/orange3]"
             )
             print(
                 f"[orange3]Reattempting with latest stable version {project_info['latest_stable_release_number']}.[/orange3]"
