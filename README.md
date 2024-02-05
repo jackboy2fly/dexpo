@@ -26,3 +26,4 @@
 ```console
 $ python dexpo.py pandas --api-key 123APIKEY456 --platform pypi --report
 ```
+![example](https://github.com/jackboy2fly/dexpo/assets/81083035/62bc80a8-0fa7-468f-8515-0af622e42dc2)
