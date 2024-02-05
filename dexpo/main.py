@@ -48,6 +48,6 @@ def main(
     """
     project_info = get_project_info(project, api_key)
     write_project_info(project_info, report)
-    vuln_info = get_vuln_info(project, project_info["latest_release_number"])
+    vuln_info = get_vuln_info(project, project_info["versions"][-1]["number"])
     if vuln_info:
         write_vuln_info(vuln_info, report)

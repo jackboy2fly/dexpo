@@ -16,8 +16,8 @@ def write_project_info(project_info: dict, report: bool) -> None:
 :star: Stars: {project_info['stars']}
 :link: Repository URL: {project_info['repository_url']}
 :copyright::copyright: Respositoy License: {project_info['repository_license']}
-:vs: Latest Release Version: {project_info['latest_release_number']}
-:clock3: Latest Release Time: {datetime.strptime(project_info['latest_release_published_at'], '%Y-%m-%dT%H:%M:%S.%fZ')}
+:vs: Latest Release Version: {project_info["versions"][-1]["number"]}
+:clock3: Latest Release Time: {datetime.strptime(project_info["versions"][-1]["published_at"], '%Y-%m-%dT%H:%M:%S.%fZ')}
 :vs: Latest Stable Release Version: {project_info['latest_stable_release_number']}
 :clock3: Latest Stable Release Time: {datetime.strptime(project_info['latest_stable_release_published_at'], '%Y-%m-%dT%H:%M:%S.%fZ')}
 :chart_with_upwards_trend: Dependents: {project_info['dependent_repos_count']}
