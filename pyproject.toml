@@ -5,6 +5,8 @@ license = "MIT"
 description = "Dependency Exposition Boiled Down"
 authors = ["Jack Hadaway <jack.hadaway@outlook.com>"]
 readme = "README.md"
+homepage = "https://github.com/jackboy2fly/dexpo"
+repository = "https://github.com/jackboy2fly/dexpo"
 
 [tool.poetry.scripts]
 dexpo = "dexpo.main:app"
