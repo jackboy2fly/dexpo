@@ -52,7 +52,7 @@ def main(
     ] = None,
 ):
     """
-    Print basic reports (and optionally write to SVG files with `--report` flag) about a pypi PROJECT's reputation and security.
+    Print basic reports (and optionally write to SVG files with `--report` flag) about a pypi PROJECT's reputation and vulnerabilites.
     """
     project_info = get_project_info(project, api_key)
     if project_info["versions"][-1]["number"] != project_info["latest_release_number"]:
@@ -70,6 +70,11 @@ def main(
             project_release_time = datetime.strptime(
                 project_info["versions"][-1]["published_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
             )
+    else:
+        project_version = project_info["latest_release_number"]
+        project_release_time = datetime.strptime(
+            project_info["latest_release_published_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
+        )
     write_project_info(project_info, project_version, project_release_time, report)
     if vuln:
         vuln_info = get_vuln_info(project, project_version)
