@@ -1,8 +1,8 @@
 # Introduction
 
-**Dexpo** is a simple CLI tool for generating basic reports about a given package using data from the [libraries.io API](https://libraries.io).
+**Dexpo** is a simple CLI tool for generating basic reports about a given python package's reputation and known vulnerabilites using data from the [libraries.io API](https://libraries.io) and pypi.org.
 
-**Disclaimer**: Only PyPI and NPM projects are currently supported.
+**Disclaimer**: Only PyPI projects are currently supported.
 
 # Requirements
 

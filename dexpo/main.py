@@ -3,10 +3,9 @@ from typing import Annotated
 
 import typer
 
-from .choices import Platform
 from .callbacks import project_callback, version_callback
-from .info import get_project_info
-from .outputs import write_project_info
+from .info import get_project_info, get_vuln_info
+from .outputs import write_project_info, write_vuln_info
 
 
 app = typer.Typer()
@@ -29,18 +28,10 @@ def main(
             help="libraries.io API key. Key must be provided or stored in env var called 'LIBRARIESIO_API_KEY'. Create an account to get your key. https://libraries.io",
         ),
     ] = getenv("LIBRARIESIO_API_KEY"),
-    platform: Annotated[
-        Platform,
-        typer.Option(
-            show_choices=True,
-            help="Package managment platform to search.",
-            case_sensitive=False,
-        ),
-    ] = Platform.pypi,
     report: Annotated[
         bool,
         typer.Option(
-            help="Enable to write console output to an svg file in cwd.",
+            help="Enable to write console output to svg files in cwd.",
         ),
     ] = False,
     version: Annotated[
@@ -53,7 +44,10 @@ def main(
     ] = None,
 ):
     """
-    Print a basic report (and optionally write to an SVG file with `--report` flag) about a PROJECT.
+    Print basic reports (and optionally write to SVG files with `--report` flag) about a pypi PROJECT's reputation and security.
     """
-    project_info = get_project_info(project, platform.value, api_key)
+    project_info = get_project_info(project, api_key)
     write_project_info(project_info, report)
+    vuln_info = get_vuln_info(project, project_info["latest_release_number"])
+    if vuln_info:
+        write_vuln_info(vuln_info, report)

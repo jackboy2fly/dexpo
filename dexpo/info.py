@@ -3,9 +3,9 @@ import typer
 from rich import print
 
 
-def get_project_info(project: str, platform: str, api_key: str) -> dict:
+def get_project_info(project: str, api_key: str) -> dict:
     with requests.Session() as s:
-        r = s.get(f"https://libraries.io/api/{platform}/{project}?api_key={api_key}")
+        r = s.get(f"https://libraries.io/api/pypi/{project}?api_key={api_key}")
     match r.status_code:
         case 200:
             info: dict = r.json()
@@ -17,7 +17,7 @@ def get_project_info(project: str, platform: str, api_key: str) -> dict:
             raise typer.Exit()
         case 404:
             print(
-                f"[bold red]404 Not Found Error:[/bold red] Could not find a project called [italic purple]{project}[/italic purple] on the [italic purple]{platform}[/italic purple] platform."
+                f"[bold red]404 Not Found Error:[/bold red] Could not find a project called [italic purple]{project}[/italic purple] on the PyPI platform."
             )
             raise typer.Exit()
         case _:
@@ -27,3 +27,25 @@ def get_project_info(project: str, platform: str, api_key: str) -> dict:
             print(f"[bold orange]HTTP Status Code:[/bold orange] {r.status_code}.")
             print(f"[bold orange]HTTP Response Body:[/bold orange] {r.text}.")
             raise typer.Exit()
+
+
+def get_vuln_info(project: str, version: str) -> dict | None:
+    with requests.Session() as s:
+        r = s.get(f"https://pypi.org/pypi/{project}/{version}/json")
+    match r.status_code:
+        case 200:
+            info: dict = r.json()
+            return info
+        case 404:
+            print(
+                f"[bold red]404 Not Found Error:[/bold red] Could not find a project called [italic purple]{project}[/italic purple] with version [italic purple]{version}[/italic purple] on the PyPI vulnerability API. Skipping vulnerability report..."
+            )
+            return
+        case _:
+            print(
+                "[bold red]Something went wrong:[/bold red] An unexpected error occurred while fetching the project info from the vulnerabilites API. See below for details.\n"
+            )
+            print(f"[bold orange]HTTP Status Code:[/bold orange] {r.status_code}.")
+            print(f"[bold orange]HTTP Response Body:[/bold orange] {r.text}.")
+            print("Skipping vulnerability report...")
+            return
