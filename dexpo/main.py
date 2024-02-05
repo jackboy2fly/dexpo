@@ -3,10 +3,10 @@ from typing import Annotated
 
 import typer
 
-from dexpo.choices import Platform
-from dexpo.callbacks import project_callback, version_callback
-from dexpo.info import get_project_info
-from dexpo.outputs import write_project_info
+from .choices import Platform
+from .callbacks import project_callback, version_callback
+from .info import get_project_info
+from .outputs import write_project_info
 
 
 app = typer.Typer()

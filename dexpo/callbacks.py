@@ -1,6 +1,6 @@
 import typer
 
-from dexpo.__version__ import __version__ as dexpo_version
+from .__version__ import __version__ as dexpo_version
 
 
 def version_callback(value: bool):
