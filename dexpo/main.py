@@ -2,6 +2,7 @@ from os import getenv
 from typing import Annotated
 
 import typer
+from rich import print
 
 from .callbacks import project_callback, version_callback
 from .info import get_project_info, get_vuln_info
@@ -28,6 +29,12 @@ def main(
             help="libraries.io API key. Key must be provided or stored in env var called 'LIBRARIESIO_API_KEY'. Create an account to get your key. https://libraries.io",
         ),
     ] = getenv("LIBRARIESIO_API_KEY"),
+    vuln: Annotated[
+        bool,
+        typer.Option(
+            help="Disable with `--no-vuln` to skip fetching vulnerability info.",
+        ),
+    ] = True,
     report: Annotated[
         bool,
         typer.Option(
@@ -48,6 +55,65 @@ def main(
     """
     project_info = get_project_info(project, api_key)
     write_project_info(project_info, report)
-    vuln_info = get_vuln_info(project, project_info["versions"][-1]["number"])
-    if vuln_info:
-        write_vuln_info(vuln_info, report)
+    if vuln:
+        vuln_info = get_vuln_info(project, project_info["versions"][-1]["number"])
+        if vuln_info:
+            if vuln_info["info"]["yanked"]:
+                print(
+                    f"[orange3]Latest version {project_info['versions'][-1]['number']} was yanked because {vuln_info['info']['yanked_reason']}.[/orange3]"
+                )
+                print(
+                    f"[orange3]Reattempting with latest stable version {project_info['latest_stable_release_number']}.[/orange3]"
+                )
+                yanked_vuln_info = get_vuln_info(
+                    project, project_info["latest_stable_release_number"]
+                )
+                if yanked_vuln_info:
+                    if yanked_vuln_info["info"]["yanked"]:
+                        print(
+                            f"[bold red]The latest stable version {project_info['latest_stable_release_number']} was also yanked because {yanked_vuln_info['info']['yanked_reason']}.[/bold red]"
+                        )
+                        print(
+                            f"[bold red]Please investigate the latest releases of the {project} package for clarity.[/bold red]"
+                        )
+                        return
+                    write_vuln_info(yanked_vuln_info, report)
+                    return
+                print(
+                    f"[bold red]No vulnerability info was found for the latest stable version {project_info['latest_stable_release_number']}.[/bold red]"
+                )
+                print(
+                    f"[bold red]Please investigate the latest releases of the {project} package for clarity.[/bold red]"
+                )
+                return
+            write_vuln_info(vuln_info, report)
+            return
+        else:
+            print(
+                f"[orange3]No vulnerability info was found for the latest version {project_info['versions'][-1]['number']}.[/orange3]"
+            )
+            print(
+                f"[orange3]Reattempting with latest stable version {project_info['latest_stable_release_number']}.[/orange3]"
+            )
+            missing_vuln_info = get_vuln_info(
+                project, project_info["latest_stable_release_number"]
+            )
+            if missing_vuln_info:
+                if missing_vuln_info["info"]["yanked"]:
+                    print(
+                        f"[bold red]The latest stable version {project_info['latest_stable_release_number']} was yanked.[/bold red]"
+                    )
+                    print(
+                        f"[bold red]Please investigate the latest releases of the {project} package for clarity.[/bold red]"
+                    )
+                    return
+                write_vuln_info(missing_vuln_info, report)
+                return
+            else:
+                print(
+                    f"[bold red]No vulnerability info was found for the latest stable version {project_info['latest_stable_release_number']} either.[/bold red]"
+                )
+                print(
+                    f"[bold red]Please investigate the latest releases of the {project} package for clarity.[/bold red]"
+                )
+                return

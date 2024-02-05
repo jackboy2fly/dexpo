@@ -37,15 +37,12 @@ def get_vuln_info(project: str, version: str) -> dict | None:
             info: dict = r.json()
             return info
         case 404:
-            print(
-                f"[bold red]404 Not Found Error:[/bold red] Could not find a project called [italic purple]{project}[/italic purple] with version [italic purple]{version}[/italic purple] on the PyPI vulnerability API. Skipping vulnerability report..."
-            )
-            return
+            return None
         case _:
             print(
-                "[bold red]Something went wrong:[/bold red] An unexpected error occurred while fetching the project info from the vulnerabilites API. See below for details.\n"
+                "[bold red]Something went wrong:[/bold red] An unexpected error occurred while fetching the vulnerability info from the pypi API. See below for details.\n"
             )
             print(f"[bold orange]HTTP Status Code:[/bold orange] {r.status_code}.")
             print(f"[bold orange]HTTP Response Body:[/bold orange] {r.text}.")
-            print("Skipping vulnerability report...")
-            return
+            print(f"Skipping vulnerability report for version {version}...")
+            return None
