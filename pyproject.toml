@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dexpo"
-version = "0.1.7"
+version = "0.1.8"
 license = "MIT"
 description = "Dependency Exposition Boiled Down"
 authors = ["Jack Hadaway <jack.hadaway@outlook.com>"]
