@@ -79,28 +79,29 @@ def write_project_info(project_info: dict, vuln: bool, report: bool) -> None:
             version = list(project_info["releases"])[-1]
         else:
             version = project_info["info"]["version"]
-
         with requests.Session() as s:
             pypi_version_response = s.get(
                 f"https://pypi.org/pypi/{project}/{version}/json"
             )
         pypi_version_data = pypi_version_response.json()
-
         if "license" not in list(github_data) or github_data["license"] is None:
             license_name = project_info["info"]["license"]
         else:
             license_name = github_data["license"]["name"]
-
         if "homepage" not in list(github_data):
             homepage = project_info["info"]["home_page"]
         else:
             homepage = github_data["homepage"]
-
         if project_info["info"]["author"] in {None, ""}:
             author = project_info["info"]["author_email"]
         else:
             author = project_info["info"]["author"]
-
+        if len(pypi_version_data["urls"]) > 0:
+            release_time = datetime.strptime(
+                pypi_version_data["urls"][-1]["upload_time"], "%Y-%m-%dT%H:%M:%S"
+            )
+        else:
+            release_time = "Not Found"
         console.print(
             Panel.fit(
                 f"""
@@ -113,7 +114,7 @@ def write_project_info(project_info: dict, vuln: bool, report: bool) -> None:
 :link: Repository URL: {repo_url}
 :copyright::copyright: Respositoy License: {license_name}
 :vs: Latest Stable Release Version: {version}
-:clock3: Latest Stable Release Time: {datetime.strptime(pypi_version_data["urls"][-1]['upload_time'], '%Y-%m-%dT%H:%M:%S')}
+:clock3: Latest Stable Release Time: {release_time}
 """,
                 border_style="green",
                 title=project,
@@ -133,7 +134,6 @@ def write_project_info(project_info: dict, vuln: bool, report: bool) -> None:
             version = list(project_info["releases"])[-1]
         else:
             version = project_info["info"]["version"]
-
         with requests.Session() as s:
             pypi_version_response = s.get(
                 f"https://pypi.org/pypi/{project}/{version}/json"
@@ -144,6 +144,12 @@ def write_project_info(project_info: dict, vuln: bool, report: bool) -> None:
             author = project_info["info"]["author_email"]
         else:
             author = project_info["info"]["author"]
+        if len(pypi_version_data["urls"]) > 0:
+            release_time = datetime.strptime(
+                pypi_version_data["urls"][-1]["upload_time"], "%Y-%m-%dT%H:%M:%S"
+            )
+        else:
+            release_time = "Not Found"
         console.print(
             Panel.fit(
                 f"""
@@ -156,7 +162,7 @@ def write_project_info(project_info: dict, vuln: bool, report: bool) -> None:
 :link: Repository URL: {repo_url}
 :copyright::copyright: Respositoy License: {license_name}
 :vs: Latest Stable Release Version: {version}
-:clock3: Latest Stable Release Time: {datetime.strptime(pypi_version_data["urls"][-1]['upload_time'], '%Y-%m-%dT%H:%M:%S')}
+:clock3: Latest Stable Release Time: {release_time}
 """,
                 border_style="green",
                 title=project,
