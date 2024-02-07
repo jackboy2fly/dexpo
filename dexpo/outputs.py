@@ -29,15 +29,18 @@ def write_project_info(project_info: dict, vuln: bool, report: bool) -> None:
                 break
             continue
         if repo_url is None:
-            temp_url: str = project_info["info"]["home_page"]
-            if "github.com/" in temp_url.lower().strip() and (
-                project.lower().strip() in temp_url.lower().strip()
-            ):
-                repo_url: str = (
-                    temp_url[: temp_url.lower().strip().rindex(project.lower().strip())]
-                    + project
-                )
-            else:
+            if project_info["info"]["home_page"] is not None:
+                temp_url: str = project_info["info"]["home_page"]
+                if "github.com/" in temp_url.lower().strip() and (
+                    project.lower().strip() in temp_url.lower().strip()
+                ):
+                    repo_url: str = (
+                        temp_url[
+                            : temp_url.lower().strip().rindex(project.lower().strip())
+                        ]
+                        + project
+                    )
+            if repo_url is None:
                 for u in list(project_urls):
                     temp_url: str = project_urls[u]
                     if "github.com/" in temp_url and project in temp_url:
