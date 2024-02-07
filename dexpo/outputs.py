@@ -93,7 +93,7 @@ def write_project_info(project_info: dict, vuln: bool, report: bool) -> None:
         else:
             homepage = github_data["homepage"]
 
-        if project_info["info"]["author"] is None:
+        if project_info["info"]["author"] in {None, ""}:
             author = project_info["info"]["author_email"]
         else:
             author = project_info["info"]["author"]
@@ -174,35 +174,35 @@ def write_project_info(project_info: dict, vuln: bool, report: bool) -> None:
         vulns = [
             v for v in pypi_version_data["vulnerabilities"] if v["withdrawn"] is None
         ]
-    num_vulns = len(vulns)
-    console.print(f"Number of unwithdrawn vulnerabilites: {num_vulns}")
-    if num_vulns > 0:
-        table = Table(
-            title=f"{pypi_version_data['info']['name']} {pypi_version_data['info']['version']} Vulnerabilities",
-            show_lines=True,
-        )
-        table.add_column("ID", style="cyan")
-        table.add_column("Summary", style="orange3")
-        table.add_column("Fixed In", style="purple")
-        table.add_column("Details", style="red")
-        table.add_column("Link", style="blue")
-        for vuln in vulns:
-            fixed_in = ", ".join(vuln["fixed_in"])
-            table.add_row(
-                f"[bold]{vuln['id']}[/bold]",
-                vuln["summary"],
-                fixed_in,
-                vuln["details"],
-                vuln["link"],
+        num_vulns = len(vulns)
+        console.print(f"Number of unwithdrawn vulnerabilites: {num_vulns}")
+        if num_vulns > 0:
+            table = Table(
+                title=f"{pypi_version_data['info']['name']} {pypi_version_data['info']['version']} Vulnerabilities",
+                show_lines=True,
             )
-        console.print(table)
-        if report:
-            report_path = (
-                Path()
-                .absolute()
-                .joinpath(
-                    f"{date.today().strftime('%Y-%m-%d')} dexpo {pypi_version_data['name']} vuln report.svg"
+            table.add_column("ID", style="cyan")
+            table.add_column("Summary", style="orange3")
+            table.add_column("Fixed In", style="purple")
+            table.add_column("Details", style="red")
+            table.add_column("Link", style="blue")
+            for vuln in vulns:
+                fixed_in = ", ".join(vuln["fixed_in"])
+                table.add_row(
+                    f"[bold]{vuln['id']}[/bold]",
+                    vuln["summary"],
+                    fixed_in,
+                    vuln["details"],
+                    vuln["link"],
                 )
-            )
-            console.save_svg(report_path, theme=MONOKAI)
-            console.print("Vulnerability report file was written: ", report_path)
+            console.print(table)
+            if report:
+                report_path = (
+                    Path()
+                    .absolute()
+                    .joinpath(
+                        f"{date.today().strftime('%Y-%m-%d')} dexpo {pypi_version_data['name']} vuln report.svg"
+                    )
+                )
+                console.save_svg(report_path, theme=MONOKAI)
+                console.print("Vulnerability report file was written: ", report_path)
