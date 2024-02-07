@@ -113,7 +113,7 @@ def write_project_info(project_info: dict, vuln: bool, report: bool) -> None:
 :clock3: Latest Stable Release Time: {datetime.strptime(pypi_version_data["urls"][-1]['upload_time'], '%Y-%m-%dT%H:%M:%S')}
 """,
                 border_style="green",
-                title=project_info["info"]["name"],
+                title=project,
             ),
             justify="center",
         )
@@ -156,7 +156,7 @@ def write_project_info(project_info: dict, vuln: bool, report: bool) -> None:
 :clock3: Latest Stable Release Time: {datetime.strptime(pypi_version_data["urls"][-1]['upload_time'], '%Y-%m-%dT%H:%M:%S')}
 """,
                 border_style="green",
-                title=project_info["info"]["name"],
+                title=project,
             ),
             justify="center",
         )
@@ -165,7 +165,7 @@ def write_project_info(project_info: dict, vuln: bool, report: bool) -> None:
             Path()
             .absolute()
             .joinpath(
-                f"{date.today().strftime('%Y-%m-%d')} dexpo {project_info['name']} project report.svg"
+                f"{date.today().strftime('%Y-%m-%d')} dexpo {project} project report.svg"
             )
         )
         console.save_svg(report_path, theme=MONOKAI)
