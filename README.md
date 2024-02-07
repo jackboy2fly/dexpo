@@ -15,4 +15,4 @@
 ```console
 $ dexpo pandas
 ```
-![example](https://github.com/jackboy2fly/dexpo/assets/81083035/62bc80a8-0fa7-468f-8515-0af622e42dc2)
+![2024-02-06 dexpo pandas project report](https://github.com/jackboy2fly/dexpo/assets/81083035/461c90f7-4c4a-4e98-a3f9-6203245cfeeb)
